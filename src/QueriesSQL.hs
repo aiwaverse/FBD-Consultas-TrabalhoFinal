@@ -10,6 +10,7 @@ module QueriesSQL
     ( projectName
     ) where
 
+import Relude
 
-projectName :: String
+projectName :: Text
 projectName = "QueriesSQL"

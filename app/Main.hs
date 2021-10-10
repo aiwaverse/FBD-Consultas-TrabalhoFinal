@@ -1,14 +1,20 @@
 module Main (main) where
 
-import QueriesSQL (projectName)
-import Database.HDBC
-import Database.HDBC.PostgreSQL
+import           Database.HDBC            (IConnection (prepare),
+                                           Statement (execute), fetchAllRows,
+                                           fetchAllRowsMap, getColumnNames)
+import           Database.HDBC.PostgreSQL
+import           Printer                  (createBoxes)
+import           QueriesSQL               (projectName)
+import           Text.PrettyPrint.Boxes   (printBox)
 
 something :: IO ()
-something = do 
+something = do
               c <- connectPostgreSQL "host=localhost dbname=TBF user=maya password=sapphic"
-              res <- quickQuery c "select * from conta" []
-              print res
+              st <- prepare c "select * from conta"
+              _ <- execute st []
+              res <- fetchAllRowsMap st
+              printBox $ createBoxes res
 
 
 main :: IO ()
