@@ -2,6 +2,7 @@ module Main (main) where
 
 import QueriesSQL (projectName)
 
+import Relude
 
 main :: IO ()
-main = putStrLn ("Tests for " ++ projectName)
+main = putTextLn ("Tests for " <> projectName)
