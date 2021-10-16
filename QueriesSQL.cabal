@@ -26,7 +26,6 @@ common common-options
                      , relude ^>= 1.0.0.1
                      , HDBC ^>= 2.4.0.3
                      , HDBC-postgresql ^>= 2.5.0.0
-                     , containers
                      , boxes
                      , text
 

@@ -1,10 +1,9 @@
-module Printer where
+module Printer (prettyPrintQuery) where
 
-import Relude hiding ((<>))
+import Data.Text as T (length, unpack)
 import Database.HDBC
-
+import Relude hiding ((<>))
 import Text.PrettyPrint.Boxes
-import Data.Text as T(length, unpack)
 
 -- | Utility function since lists of lists are very common
 -- Since this only uses fmap, it can technically work with any double-functor case
@@ -16,6 +15,7 @@ doubleMap f = fmap (fmap f)
 -- infix priority for <$$>
 -- same as <$>
 infixl 4 <$$>
+
 -- | Operator for doubleMap
 -- >>> (+3) <$$> [[1,2],[3,4]]
 -- [[4,5],[6,7]]
@@ -38,7 +38,8 @@ prettyPrintQuery colNames colValues = titleBox /+/ foldl' (//) nullBox listOfBox
 -- the first width is used on all the first values, and so on
 generateBoxesAlligned :: [[Text]] -> [Int] -> [[Box]]
 generateBoxesAlligned content sizes = map (zipWith createBox sizes) content
-  where createBox sz t = alignHoriz right sz (text $ T.unpack t)
+  where
+    createBox sz t = alignHoriz right sz (text $ T.unpack t)
 
 -- | Gets the largest widths of each column of a list of lists
 -- >>> getLargestWidths (["pear", "banana"] :| [["apple", "lemon"], ["lime", "avocado"]])
@@ -51,5 +52,6 @@ getLargestWidths (names : rest) = go rest initialSizes
     initialSizes = fmap T.length names
     go :: [[Text]] -> [Int] -> [Int]
     go [] sizes = sizes
-    go (c : cs) sizes = let colSizes = map T.length c in
-                    go cs $ zipWith (\str sz -> if str > sz then str else sz) colSizes sizes
+    go (c : cs) sizes =
+      let colSizes = map T.length c
+       in go cs $ zipWith (\str sz -> if str > sz then str else sz) colSizes sizes
