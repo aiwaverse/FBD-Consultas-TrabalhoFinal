@@ -1,6 +1,6 @@
 module Printer where
 
-import Relude
+import Relude hiding ((<>))
 import Database.HDBC
 
 import Text.PrettyPrint.Boxes
@@ -26,23 +26,26 @@ infixl 4 <$$>
 
 -- | Given the column names and the values of a query, generates a pretty box with the info
 prettyPrintQuery :: [Text] -> [[SqlValue]] -> Box
-prettyPrintQuery colNames colValues = foldl' (//) nullBox listOfBoxes
+prettyPrintQuery colNames colValues = titleBox /+/ foldl' (//) nullBox listOfBoxes
   where
-    allInfo = colNames :| (fromSql @Text <$$> colValues)
-    widths = getLargestWidths allInfo
-    listOfBoxes = map (foldl' (<+>) nullBox ) $ generateBoxesAlligned allInfo widths
+    valRows = fromSql @Text <$$> colValues
+    allRows = colNames : valRows
+    widths = getLargestWidths allRows
+    titleBox = foldl' (<>) nullBox $ map (foldl' (<+>) nullBox) $ generateBoxesAlligned [colNames] widths
+    listOfBoxes = map (foldl' (<+>) nullBox) $ generateBoxesAlligned valRows widths
 
 -- | Generates a list of list of boxes using the specified widths
 -- the first width is used on all the first values, and so on
-generateBoxesAlligned :: NonEmpty [Text] -> [Int] -> [[Box]]
-generateBoxesAlligned content sizes = map (zipWith createBox sizes) (toList content)
+generateBoxesAlligned :: [[Text]] -> [Int] -> [[Box]]
+generateBoxesAlligned content sizes = map (zipWith createBox sizes) content
   where createBox sz t = alignHoriz right sz (text $ T.unpack t)
 
--- | Gets the largest widths of each column of a NonEmpty of lists
+-- | Gets the largest widths of each column of a list of lists
 -- >>> getLargestWidths (["pear", "banana"] :| [["apple", "lemon"], ["lime", "avocado"]])
 -- [5,7]
-getLargestWidths :: NonEmpty [Text] -> [Int]
-getLargestWidths (names :| rest) = go rest initialSizes
+getLargestWidths :: [[Text]] -> [Int]
+getLargestWidths [] = []
+getLargestWidths (names : rest) = go rest initialSizes
   where
     initialSizes :: [Int]
     initialSizes = fmap T.length names
