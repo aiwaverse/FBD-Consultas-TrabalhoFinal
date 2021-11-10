@@ -28,6 +28,8 @@ common common-options
                      , HDBC-postgresql ^>= 2.5.0.0
                      , boxes
                      , text
+                     , process
+                     , split
 
   ghc-options:         -Wall
                        -Wcompat
@@ -60,6 +62,7 @@ library
   exposed-modules:     NetflixSQL
                      , Printer
                      , Queries
+                     , Menu
 
 executable NetflixSQL
   import:              common-options
