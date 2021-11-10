@@ -39,7 +39,7 @@ prettyPrintQuery colNames colValues = titleBox /+/ foldl' (//) nullBox listOfBox
 generateBoxesAlligned :: [[Text]] -> [Int] -> [[Box]]
 generateBoxesAlligned content sizes = map (zipWith createBox sizes) content
   where
-    createBox sz t = alignHoriz right sz (text $ T.unpack t)
+    createBox sz t = alignHoriz left (sz + 3) (text $ T.unpack t)
 
 -- | Gets the largest widths of each column of a list of lists
 -- >>> getLargestWidths (["pear", "banana"] :| [["apple", "lemon"], ["lime", "avocado"]])

@@ -1,7 +1,7 @@
 module Main (main) where
 
 import Relude
-import QueriesSQL (something)
+import NetflixSQL (something)
 
 
 main :: IO ()
