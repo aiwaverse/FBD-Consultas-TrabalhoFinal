@@ -20,7 +20,7 @@ mainMenu = do
   putTextLn "Bem vindo as consultas da base da Netflix!"
   putTextLn "Por favor escolha sua opção:"
   putTextLn "0 - Consulta por nome da Série"
-  putTextLn "1 - Consulta por nome de Episódio"
+  putTextLn "1 - Consulta de Episódios por nome da Série"
   putTextLn "2 - Consulta de Dispositivos e Contas por nome do Cliente"
   putTextLn "3 - Consulta de Pessoas e Participações"
   putTextLn "4 - Consulta de Items de Catalogo que possuam mais de uma categoria"
