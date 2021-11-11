@@ -5,39 +5,44 @@
 --
 -- See README for more info
 module NetflixSQL
-  ( projectName
-  , something
+  ( localConnection,
+    searchQuery,
+    runQuery,
   )
 where
 
-import Database.HDBC
-  ( IConnection (prepare)
-  , Statement (execute)
-  , fetchAllRows
-  , getColumnNames, toSql
-  )
-import Database.HDBC.PostgreSQL ( connectPostgreSQL, Connection )
-import Printer
-import Relude
 import Data.Text (pack, unpack)
-import Text.PrettyPrint.Boxes ( printBox )
+import Database.HDBC
+  ( IConnection (prepare),
+    Statement (execute),
+    fetchAllRows,
+    getColumnNames,
+    toSql,
+  )
+import Database.HDBC.PostgreSQL (Connection, connectPostgreSQL)
+import Printer
 import Queries
+import Relude
+import Relude.Extra.Map
+import System.IO (hSetEcho)
+import Text.PrettyPrint.Boxes (printBox)
 
 localConnection :: Text -> Text -> Text -> IO Connection
 localConnection dbname user password = connectPostgreSQL $ unpack conString
-  where conString = "host=localhost dbname=" <> dbname <> " user=" <> user <> " password=" <> password
+  where
+    conString = "host=localhost dbname=" <> dbname <> " user=" <> user <> " password=" <> password
 
-defaultConnection :: IO Connection
-defaultConnection = localConnection "Netflix" "maya" "sapphic"
+searchQuery :: Int -> Queries -> Maybe (String, Int)
+searchQuery i (Queries q) = lookup i q
 
-something :: IO ()
-something = do
-  c <- defaultConnection
-  st <- prepare c consultaSerie
-  _ <- execute st [toSql @String "Bob Esponja"]
+runQuery :: Connection -> String -> [String] -> IO ()
+runQuery c search args = do
+  st <- prepare c search
+  _ <- execute st (map toSql args)
   colNames <- map pack <$> getColumnNames st
   res <- fetchAllRows st
   printBox $ prettyPrintQuery colNames res
-
-projectName :: Text
-projectName = "QueriesSQL"
+  hSetEcho stdin False
+  _ <- getLine
+  hSetEcho stdin True
+  pure ()
