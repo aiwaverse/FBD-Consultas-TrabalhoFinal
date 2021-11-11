@@ -38,7 +38,7 @@ searchQuery i (Queries q) = lookup i q
 runQuery :: Connection -> String -> [String] -> IO ()
 runQuery c search args = do
   st <- prepare c search
-  _ <- execute st (map (toSql @String) args)
+  _ <- execute st (map toSql args)
   colNames <- map pack <$> getColumnNames st
   res <- fetchAllRows st
   printBox $ prettyPrintQuery colNames res

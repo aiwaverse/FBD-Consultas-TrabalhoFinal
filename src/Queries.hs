@@ -1,11 +1,10 @@
 {-# LANGUAGE DerivingStrategies #-}
 
-module Queries (Queries(..), netflixQueries) where
+module Queries (Queries (..), netflixQueries) where
 
 import Relude
 
 newtype Queries = Queries (Map Int (String, Int)) deriving stock (Show)
-
 
 netflixQueries :: Queries
 netflixQueries =
@@ -30,7 +29,7 @@ netflixQueries =
 -- >>> count "banana" 'a'
 -- 3
 count :: (Foldable t, Eq a) => t a -> a -> Int
-count f e = foldr ( \ls a -> if ls == e then a + 1 else a) 0 f
+count f e = foldr (\ls a -> if ls == e then a + 1 else a) 0 f
 
 -- | Creates a pair with the query and the amount of occurences of '?'
 -- >>> createQueryPair consultaSerie
